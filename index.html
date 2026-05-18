@@ -224,6 +224,33 @@
         </div>
 
         <div class="card">
+          <h3 class="card-title">Time to Close (Days)</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">How long it takes to convert leads to Customers/IBOs</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px;">
+            <div class="stat-card" style="background: #d1fae5;">
+              <div class="stat-value" id="close-0-14" style="font-size: 24px; color: #065f46;">0</div>
+              <div class="stat-label" style="font-size: 12px;">0-14 days</div>
+            </div>
+            <div class="stat-card" style="background: #fef3c7;">
+              <div class="stat-value" id="close-15-30" style="font-size: 24px; color: #92400e;">0</div>
+              <div class="stat-label" style="font-size: 12px;">15-30 days</div>
+            </div>
+            <div class="stat-card" style="background: #fed7aa;">
+              <div class="stat-value" id="close-31-60" style="font-size: 24px; color: #9a3412;">0</div>
+              <div class="stat-label" style="font-size: 12px;">31-60 days</div>
+            </div>
+            <div class="stat-card" style="background: #fecaca;">
+              <div class="stat-value" id="close-61-90" style="font-size: 24px; color: #991b1b;">0</div>
+              <div class="stat-label" style="font-size: 12px;">61-90 days</div>
+            </div>
+            <div class="stat-card" style="background: #fee2e2;">
+              <div class="stat-value" id="close-90-plus" style="font-size: 24px; color: #7f1d1d;">0</div>
+              <div class="stat-label" style="font-size: 12px;">90+ days</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
           <h3 class="card-title">Top Performers Today</h3>
           <div id="top-performers" style="margin-top: 16px;"></div>
         </div>
@@ -414,6 +441,40 @@
       };
     }
 
+    function calculateTimeToCloseStats() {
+      const stats = { '0-14': 0, '15-30': 0, '31-60': 0, '61-90': 0, '90-plus': 0 };
+      
+      // Get all closed leads (Customer or IBO) from all builders
+      const allClosedLeads = [];
+      teamData.forEach(builder => {
+        const closedLeads = (builder.leads || []).filter(l => 
+          (l.status === 'Customer' || l.status === 'IBO') && l.customerSince && l.dateAdded
+        );
+        allClosedLeads.push(...closedLeads);
+      });
+      
+      allClosedLeads.forEach(lead => {
+        const created = new Date(lead.dateAdded);
+        const closed = new Date(lead.customerSince);
+        const diffTime = Math.abs(closed - created);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays <= 14) {
+          stats['0-14']++;
+        } else if (diffDays <= 30) {
+          stats['15-30']++;
+        } else if (diffDays <= 60) {
+          stats['31-60']++;
+        } else if (diffDays <= 90) {
+          stats['61-90']++;
+        } else {
+          stats['90-plus']++;
+        }
+      });
+      
+      return stats;
+    }
+
     function renderView() {
       if (currentView === 'roster') {
         document.getElementById('roster-view').classList.remove('hidden');
@@ -482,6 +543,14 @@
       document.getElementById('team-followups-due').textContent = totalFollowUpsDue;
       document.getElementById('team-overdue').textContent = totalOverdue;
       document.getElementById('team-conversion').textContent = conversionRate + '%';
+
+      // Calculate time to close stats
+      const timeToCloseStats = calculateTimeToCloseStats();
+      document.getElementById('close-0-14').textContent = timeToCloseStats['0-14'];
+      document.getElementById('close-15-30').textContent = timeToCloseStats['15-30'];
+      document.getElementById('close-31-60').textContent = timeToCloseStats['31-60'];
+      document.getElementById('close-61-90').textContent = timeToCloseStats['61-90'];
+      document.getElementById('close-90-plus').textContent = timeToCloseStats['90-plus'];
 
       // Top performers today
       const topPerformers = builderStats
