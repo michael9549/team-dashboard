@@ -211,6 +211,11 @@
         </div>
 
         <div class="card">
+          <h3 class="card-title">All Time Top Performers</h3>
+          <div id="all-time-performers" style="margin-top: 16px;"></div>
+        </div>
+
+        <div class="card">
           <h3 class="card-title">Builders Needing Attention</h3>
           <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups</p>
           <div id="needs-attention" style="margin-top: 16px;"></div>
@@ -495,6 +500,21 @@
             </div>
           `).join('')
         : '<p style="color: var(--gray-500);">No leads added today yet</p>';
+
+      // All time top performers (by total leads)
+      const allTimePerformers = builderStats
+        .sort((a, b) => b.totalLeads - a.totalLeads)
+        .filter(b => b.totalLeads > 0)
+        .slice(0, 5);
+
+      document.getElementById('all-time-performers').innerHTML = allTimePerformers.length > 0
+        ? allTimePerformers.map((b, i) => `
+            <div style="display: flex; justify-content: space-between; padding: 12px; background: linear-gradient(90deg, #fef3c7 0%, #fffbeb 100%); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #f59e0b;">
+              <span><strong>#${i + 1}</strong> ${b.name}</span>
+              <span style="font-weight: 600; color: #d97706;">${b.totalLeads} total leads</span>
+            </div>
+          `).join('')
+        : '<p style="color: var(--gray-500);">No leads yet</p>';
 
       // Builders needing attention
       const needsAttention = builderStats
