@@ -57,6 +57,19 @@
     }
     .nav-button:hover { background: var(--gray-50); }
     .nav-button.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .refresh-button {
+      padding: 8px 16px;
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: auto;
+    }
+    .refresh-button:hover { background: #059669; }
+    .refresh-button:disabled { background: var(--gray-400); cursor: not-allowed; }
     .card {
       background: white;
       border-radius: 8px;
@@ -111,6 +124,9 @@
     .badge-danger { background: #fee2e2; color: #991b1b; }
     .hidden { display: none !important; }
     .last-updated { font-size: 12px; color: var(--gray-500); }
+    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--gray-300); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-message { color: var(--danger); padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 16px; }
     @media (max-width: 768px) {
       .container { padding: 12px; }
       .table { font-size: 12px; }
@@ -125,6 +141,7 @@
       <div class="nav">
         <button class="nav-button active" data-view="roster">Team Roster</button>
         <button class="nav-button" data-view="overview">Team Overview</button>
+        <button class="refresh-button" id="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
       </div>
     </div>
   </div>
@@ -144,6 +161,7 @@
     <!-- Main App -->
     <div id="main-app" class="hidden">
       <div class="last-updated" id="last-updated" style="margin-bottom: 16px;"></div>
+      <div id="error-container"></div>
 
       <!-- Team Roster View -->
       <div id="roster-view">
@@ -225,13 +243,20 @@
   </div>
 
   <script>
+    // Builder registry - each builder's CRM data location
+    const BUILDERS = [
+      { name: 'Michael Martin', username: 'michael9549', repo: 'crm-leads-app' },
+      { name: 'Brandon Boyd', username: 'jbboyd19', repo: 'crm-brandon-boyd' },
+      { name: 'David Thomas', username: 'dmthomas335', repo: 'crm-david-thomas' },
+      { name: 'Jason Hull', username: 'jasonhull26', repo: 'crm-jason-hull' },
+      { name: 'Ricardo Lucien', username: 'ricardolucien35', repo: 'crm-ricardo-lucien' },
+      { name: 'Jeff Casmer', username: 'JeffCasmer', repo: 'crm-jeff-casmer' }
+    ];
+
     let teamData = [];
-    let sha = '';
     let currentView = 'roster';
     let GITHUB_TOKEN = localStorage.getItem('github_token') || '';
-    const REPO_OWNER = 'michael9549';
-    const REPO_NAME = 'team-dashboard-data';
-    const DATA_FILE = 'stats.json';
+    let isLoading = false;
 
     document.addEventListener('DOMContentLoaded', () => {
       if (GITHUB_TOKEN) {
@@ -273,107 +298,83 @@
       document.getElementById('main-app').classList.remove('hidden');
     }
 
+    async function refreshData() {
+      if (isLoading) return;
+      await loadTeamData();
+    }
+
     async function loadTeamData() {
-      try {
-        const response = await fetch(
-          `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}`,
-          {
-            headers: {
-              'Authorization': `token ${GITHUB_TOKEN}`,
-              'Accept': 'application/vnd.github.v3+json'
-            }
-          }
-        );
+      isLoading = true;
+      const refreshBtn = document.getElementById('refresh-btn');
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = '<span class="loading"></span> Loading...';
+      document.getElementById('error-container').innerHTML = '';
 
-        if (response.status === 404) {
-          teamData = [];
-          sha = '';
-          await initializeRepo();
-        } else if (response.ok) {
-          const data = await response.json();
-          const content = JSON.parse(atob(data.content));
-          teamData = content.builders || [];
-          sha = data.sha;
-          updateLastUpdated(content.lastUpdated);
-        }
-        renderView();
-      } catch (error) {
-        console.error('Error loading team data:', error);
-        teamData = [];
-        renderView();
-      }
-    }
+      teamData = [];
+      const errors = [];
 
-    async function initializeRepo() {
-      try {
-        const response = await fetch(
-          `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`,
-          {
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-          }
-        );
-
-        if (response.status === 404) {
-          await fetch('https://api.github.com/user/repos', {
-            method: 'POST',
-            headers: {
-              'Authorization': `token ${GITHUB_TOKEN}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              name: REPO_NAME,
-              description: 'Team dashboard data storage',
-              private: true,
-              auto_init: true
-            })
+      // Fetch data from each builder's repo
+      for (const builder of BUILDERS) {
+        try {
+          const leads = await fetchBuilderLeads(builder);
+          teamData.push({
+            name: builder.name,
+            username: builder.username,
+            repo: builder.repo,
+            leads: leads || []
           });
-          await saveTeamData();
+        } catch (error) {
+          console.error(`Error fetching data for ${builder.name}:`, error);
+          errors.push(`${builder.name}: ${error.message}`);
         }
-      } catch (error) {
-        console.error('Error initializing repo:', error);
       }
+
+      if (errors.length > 0) {
+        document.getElementById('error-container').innerHTML = `
+          <div class="error-message">
+            <strong>Errors loading some builder data:</strong><br>
+            ${errors.join('<br>')}
+          </div>
+        `;
+      }
+
+      updateLastUpdated();
+      renderView();
+
+      isLoading = false;
+      refreshBtn.disabled = false;
+      refreshBtn.innerHTML = '🔄 Refresh Data';
     }
 
-    async function saveTeamData() {
-      try {
-        const content = btoa(JSON.stringify({ builders: teamData, lastUpdated: new Date().toISOString() }, null, 2));
-        const response = await fetch(
-          `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Authorization': `token ${GITHUB_TOKEN}`,
-              'Accept': 'application/vnd.github.v3+json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              message: 'Update team stats',
-              content,
-              sha: sha || undefined
-            })
+    async function fetchBuilderLeads(builder) {
+      const response = await fetch(
+        `https://api.github.com/repos/${builder.username}/${builder.repo}/contents/leads.json`,
+        {
+          headers: {
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json'
           }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          sha = data.content.sha;
-          return true;
         }
-        return false;
-      } catch (error) {
-        console.error('Error saving team data:', error);
-        return false;
+      );
+
+      if (response.status === 404) {
+        // No leads file yet - builder hasn't added any leads
+        return [];
       }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = JSON.parse(atob(data.content));
+      return content.leads || [];
     }
 
-    function updateLastUpdated(timestamp) {
+    function updateLastUpdated() {
       const el = document.getElementById('last-updated');
-      if (timestamp) {
-        const date = new Date(timestamp);
-        el.textContent = `Last updated: ${date.toLocaleString()}`;
-      } else {
-        el.textContent = '';
-      }
+      const now = new Date();
+      el.textContent = `Last updated: ${now.toLocaleString()}`;
     }
 
     function getTodayPacific() {
@@ -383,10 +384,6 @@
       const month = String(pacific.getMonth() + 1).padStart(2, '0');
       const day = String(pacific.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
-    }
-
-    function isToday(dateString) {
-      return dateString === getTodayPacific();
     }
 
     function isOverdue(dateString) {
@@ -399,8 +396,8 @@
       return dateString === getTodayPacific();
     }
 
-    function calculateStats(builder) {
-      const leads = builder.leads || [];
+    function calculateStats(builderData) {
+      const leads = builderData.leads || [];
       const today = getTodayPacific();
       
       return {
@@ -433,7 +430,7 @@
       const tbody = document.getElementById('roster-tbody');
       
       if (teamData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--gray-500);">No builder data yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--gray-500);">No builder data yet. Click Refresh Data to load.</td></tr>';
         return;
       }
 
@@ -501,7 +498,7 @@
           `).join('')
         : '<p style="color: var(--gray-500);">No leads added today yet</p>';
 
-      // All time top performers (by total leads)
+      // All time top performers
       const allTimePerformers = builderStats
         .sort((a, b) => b.totalLeads - a.totalLeads)
         .filter(b => b.totalLeads > 0)
@@ -530,13 +527,6 @@
           `).join('')
         : '<p style="color: var(--gray-500);">No overdue follow-ups — great job team!</p>';
     }
-
-    // Auto-refresh every 30 seconds
-    setInterval(() => {
-      if (GITHUB_TOKEN) {
-        loadTeamData();
-      }
-    }, 30000);
   </script>
 </body>
 </html>
