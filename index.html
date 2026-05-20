@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Team Dashboard - Builder Stats</title>
   <style>
     * { box-sizing: border-box; }
@@ -147,7 +149,6 @@
   </div>
 
   <div class="container">
-    <!-- Token Setup -->
     <div id="token-setup" class="card" style="max-width: 400px; margin: 100px auto;">
       <h2 style="margin-top: 0;">GitHub Token Required</h2>
       <p style="color: var(--gray-600);">Enter your GitHub personal access token to access the team dashboard.</p>
@@ -158,12 +159,10 @@
       <button onclick="saveToken()" style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">Connect</button>
     </div>
 
-    <!-- Main App -->
     <div id="main-app" class="hidden">
       <div class="last-updated" id="last-updated" style="margin-bottom: 16px;"></div>
       <div id="error-container"></div>
 
-      <!-- Team Roster View -->
       <div id="roster-view">
         <div class="card">
           <div class="card-header">
@@ -190,63 +189,26 @@
         </div>
       </div>
 
-      <!-- Team Overview View -->
       <div id="overview-view" class="hidden">
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="team-total-leads">0</div>
-            <div class="stat-label">Total Team Leads</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="team-leads-today">0</div>
-            <div class="stat-label">Leads Added Today</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="team-customers">0</div>
-            <div class="stat-label">Total Customers</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="team-ibos">0</div>
-            <div class="stat-label">Total IBOs</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="team-followups-due">0</div>
-            <div class="stat-label">Follow-ups Due Today</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="team-overdue" style="color: var(--danger);">0</div>
-            <div class="stat-label">Overdue Follow-ups</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="team-conversion">0%</div>
-            <div class="stat-label">Team Conversion Rate</div>
-          </div>
+          <div class="stat-card"><div class="stat-value" id="team-total-leads">0</div><div class="stat-label">Total Team Leads</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-leads-today">0</div><div class="stat-label">Leads Added Today</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-customers">0</div><div class="stat-label">Total Customers</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-ibos">0</div><div class="stat-label">Total IBOs</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-followups-due">0</div><div class="stat-label">Follow-ups Due Today</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-overdue" style="color: var(--danger);">0</div><div class="stat-label">Overdue Follow-ups</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-conversion">0%</div><div class="stat-label">Team Conversion Rate</div></div>
         </div>
 
         <div class="card">
           <h3 class="card-title">Time to Close (Days)</h3>
           <p style="color: var(--gray-600); font-size: 14px;">How long it takes to convert leads to Customers/IBOs</p>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px;">
-            <div class="stat-card" style="background: #d1fae5;">
-              <div class="stat-value" id="close-0-14" style="font-size: 24px; color: #065f46;">0</div>
-              <div class="stat-label" style="font-size: 12px;">0-14 days</div>
-            </div>
-            <div class="stat-card" style="background: #fef3c7;">
-              <div class="stat-value" id="close-15-30" style="font-size: 24px; color: #92400e;">0</div>
-              <div class="stat-label" style="font-size: 12px;">15-30 days</div>
-            </div>
-            <div class="stat-card" style="background: #fed7aa;">
-              <div class="stat-value" id="close-31-60" style="font-size: 24px; color: #9a3412;">0</div>
-              <div class="stat-label" style="font-size: 12px;">31-60 days</div>
-            </div>
-            <div class="stat-card" style="background: #fecaca;">
-              <div class="stat-value" id="close-61-90" style="font-size: 24px; color: #991b1b;">0</div>
-              <div class="stat-label" style="font-size: 12px;">61-90 days</div>
-            </div>
-            <div class="stat-card" style="background: #fee2e2;">
-              <div class="stat-value" id="close-90-plus" style="font-size: 24px; color: #7f1d1d;">0</div>
-              <div class="stat-label" style="font-size: 12px;">90+ days</div>
-            </div>
+            <div class="stat-card" style="background: #d1fae5;"><div class="stat-value" id="close-0-14" style="font-size: 24px; color: #065f46;">0</div><div class="stat-label" style="font-size: 12px;">0-14 days</div></div>
+            <div class="stat-card" style="background: #fef3c7;"><div class="stat-value" id="close-15-30" style="font-size: 24px; color: #92400e;">0</div><div class="stat-label" style="font-size: 12px;">15-30 days</div></div>
+            <div class="stat-card" style="background: #fed7aa;"><div class="stat-value" id="close-31-60" style="font-size: 24px; color: #9a3412;">0</div><div class="stat-label" style="font-size: 12px;">31-60 days</div></div>
+            <div class="stat-card" style="background: #fecaca;"><div class="stat-value" id="close-61-90" style="font-size: 24px; color: #991b1b;">0</div><div class="stat-label" style="font-size: 12px;">61-90 days</div></div>
+            <div class="stat-card" style="background: #fee2e2;"><div class="stat-value" id="close-90-plus" style="font-size: 24px; color: #7f1d1d;">0</div><div class="stat-label" style="font-size: 12px;">90+ days</div></div>
           </div>
         </div>
 
@@ -270,7 +232,6 @@
   </div>
 
   <script>
-    // Builder registry - each builder's CRM data location
     const BUILDERS = [
       { name: 'Michael Martin', username: 'michael9549', repo: 'crm-leads-app' },
       { name: 'Brandon Boyd', username: 'jbboyd19', repo: 'crm-brandon-boyd' },
@@ -340,7 +301,6 @@
       teamData = [];
       const errors = [];
 
-      // Fetch data from each builder's repo
       for (const builder of BUILDERS) {
         try {
           const leads = await fetchBuilderLeads(builder);
@@ -357,12 +317,7 @@
       }
 
       if (errors.length > 0) {
-        document.getElementById('error-container').innerHTML = `
-          <div class="error-message">
-            <strong>Errors loading some builder data:</strong><br>
-            ${errors.join('<br>')}
-          </div>
-        `;
+        document.getElementById('error-container').innerHTML = '<div class="error-message"><strong>Errors loading some builder data:</strong><br>' + errors.join('<br>') + '</div>';
       }
 
       updateLastUpdated();
@@ -385,7 +340,6 @@
       );
 
       if (response.status === 404) {
-        // No leads file yet - builder hasn't added any leads
         return [];
       }
 
@@ -444,7 +398,6 @@
     function calculateTimeToCloseStats() {
       const stats = { '0-14': 0, '15-30': 0, '31-60': 0, '61-90': 0, '90-plus': 0 };
       
-      // Get all closed leads (Customer or IBO) from all builders
       const allClosedLeads = [];
       teamData.forEach(builder => {
         const closedLeads = (builder.leads || []).filter(l => 
@@ -504,9 +457,9 @@
             <td>${stats.totalLeads}</td>
             <td>${stats.customers}</td>
             <td>${stats.ibos}</td>
-            <td>${stats.followUpsDue > 0 ? `<span class="badge badge-warning">${stats.followUpsDue}</span>` : '0'}</td>
-            <td>${stats.overdue > 0 ? `<span class="badge badge-danger">${stats.overdue}</span>` : '0'}</td>
-            <td>${stats.hotLeads > 0 ? `<span class="badge badge-danger">${stats.hotLeads}</span>` : '0'}</td>
+            <td>${stats.followUpsDue > 0 ? '<span class="badge badge-warning">' + stats.followUpsDue + '</span>' : '0'}</td>
+            <td>${stats.overdue > 0 ? '<span class="badge badge-danger">' + stats.overdue + '</span>' : '0'}</td>
+            <td>${stats.hotLeads > 0 ? '<span class="badge badge-danger">' + stats.hotLeads + '</span>' : '0'}</td>
             <td>${stats.conversionRate}%</td>
           </tr>
         `;
@@ -532,7 +485,6 @@
         return { name: builder.name, ...stats };
       });
 
-      // Update team stats
       document.getElementById('team-total-leads').textContent = totalLeads;
       document.getElementById('team-leads-today').textContent = leadsToday;
       document.getElementById('team-customers').textContent = totalCustomers;
@@ -540,13 +492,11 @@
       document.getElementById('team-followups-due').textContent = totalFollowUpsDue;
       document.getElementById('team-overdue').textContent = totalOverdue;
 
-      // Calculate team conversion rate
       const conversionRate = totalLeads > 0 
         ? Math.round(((totalCustomers + totalIbos) / totalLeads) * 100)
         : 0;
       document.getElementById('team-conversion').textContent = conversionRate + '%';
 
-      // Time to close stats
       const timeStats = calculateTimeToCloseStats();
       document.getElementById('close-0-14').textContent = timeStats['0-14'];
       document.getElementById('close-15-30').textContent = timeStats['15-30'];
@@ -554,7 +504,6 @@
       document.getElementById('close-61-90').textContent = timeStats['61-90'];
       document.getElementById('close-90-plus').textContent = timeStats['90-plus'];
 
-      // Top performers today (sorted by leads today)
       const topToday = builderStats
         .filter(b => b.leadsToday > 0)
         .sort((a, b) => b.leadsToday - a.leadsToday)
@@ -575,7 +524,6 @@
         `).join('');
       }
 
-      // All time top performers (sorted by total leads)
       const allTime = builderStats
         .filter(b => b.totalLeads > 0)
         .sort((a, b) => b.totalLeads - a.totalLeads)
@@ -596,7 +544,6 @@
         `).join('');
       }
 
-      // Builders needing attention (overdue follow-ups)
       const needsAttention = builderStats
         .filter(b => b.overdue > 0)
         .sort((a, b) => b.overdue - a.overdue);
@@ -619,4 +566,3 @@
   </script>
 </body>
 </html>
-// Cache bust: Wed May 20 21:27:45 UTC 2026
