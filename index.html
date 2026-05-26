@@ -73,6 +73,18 @@
     }
     .refresh-button:hover { background: #059669; }
     .refresh-button:disabled { background: var(--gray-400); cursor: not-allowed; }
+    .logout-button {
+      padding: 8px 16px;
+      background: var(--gray-500);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+    .logout-button:hover { background: var(--gray-600); }
     .card {
       background: white;
       border-radius: 8px;
@@ -145,6 +157,7 @@
         <button class="nav-button active" data-view="roster">Team Roster</button>
         <button class="nav-button" data-view="overview">Team Overview</button>
         <button class="refresh-button" id="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
+        <button class="logout-button" onclick="logout()">🚪 Reset Token</button>
       </div>
     </div>
   </div>
@@ -282,6 +295,12 @@
       } else {
         alert('Please enter a token');
       }
+    }
+
+    function logout() {
+      localStorage.removeItem('github_token');
+      GITHUB_TOKEN = '';
+      location.reload();
     }
 
     function showMainApp() {
