@@ -336,7 +336,7 @@
         'https://api.github.com/repos/' + builder.username + '/' + builder.repo + '/contents/leads.json',
         {
           headers: {
-            'Authorization': 'token ' + GITHUB_TOKEN,
+            'Authorization': 'Bearer ' + GITHUB_TOKEN,
             'Accept': 'application/vnd.github.v3+json'
           }
         }
