@@ -351,6 +351,7 @@
     }
 
     async function fetchBuilderLeads(builder) {
+      console.log('Fetching leads for', builder.name, 'with token:', GITHUB_TOKEN ? GITHUB_TOKEN.substring(0, 10) + '...' : 'EMPTY');
       const response = await fetch(
         'https://api.github.com/repos/' + builder.username + '/' + builder.repo + '/contents/leads.json',
         {
