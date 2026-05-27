@@ -190,7 +190,7 @@
                   <th>Leads Today</th>
                   <th>Total Leads</th>
                   <th>Videos Sent</th>
-                  <th>Video Rate</th>
+                  <th>Conversion Rate</th>
                   <th>Customers</th>
                   <th>IBOs</th>
                   <th>Follow-ups Due</th>
@@ -212,7 +212,7 @@
           <div class="stat-card"><div class="stat-value" id="team-followups-due">0</div><div class="stat-label">Follow-ups Due Today</div></div>
           <div class="stat-card"><div class="stat-value" id="team-overdue" style="color: var(--danger);">0</div><div class="stat-label">Overdue Follow-ups</div></div>
           <div class="stat-card"><div class="stat-value" id="team-videos-sent">0</div><div class="stat-label">Videos Sent</div></div>
-          <div class="stat-card"><div class="stat-value" id="team-video-rate">0%</div><div class="stat-label">Team Video Rate</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-conversion">0%</div><div class="stat-label">Team Conversion Rate</div></div>
         </div>
 
         <div class="card">
@@ -405,22 +405,21 @@
       const leads = builderData.leads || [];
       const today = getTodayPacific();
       const videosSent = leads.filter(function(l) { return l.videoSent === true; }).length;
+      const customers = leads.filter(function(l) { return l.status === 'Customer'; }).length;
+      const ibos = leads.filter(function(l) { return l.status === 'IBO'; }).length;
       
       return {
         leadsToday: leads.filter(function(l) { return l.dateAdded === today; }).length,
         totalLeads: leads.length,
-        customers: leads.filter(function(l) { return l.status === 'Customer'; }).length,
-        ibos: leads.filter(function(l) { return l.status === 'IBO'; }).length,
+        customers: customers,
+        ibos: ibos,
         videosSent: videosSent,
-        videoRate: leads.length > 0 
-          ? Math.round((videosSent / leads.length) * 100)
+        conversionRate: videosSent > 0 
+          ? Math.round(((customers + ibos) / videosSent) * 100)
           : 0,
         followUpsDue: leads.filter(function(l) { return isDueToday(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
         overdue: leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
-        hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length,
-        conversionRate: leads.length > 0 
-          ? Math.round(((leads.filter(function(l) { return l.status === 'Customer'; }).length + leads.filter(function(l) { return l.status === 'IBO'; }).length) / leads.length) * 100)
-          : 0
+        hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length
       };
     }
 
@@ -484,7 +483,7 @@
           '<td>' + stats.leadsToday + '</td>' +
           '<td>' + stats.totalLeads + '</td>' +
           '<td>' + stats.videosSent + '</td>' +
-          '<td>' + stats.videoRate + '%</td>' +
+          '<td>' + stats.conversionRate + '%</td>' +
           '<td>' + stats.customers + '</td>' +
           '<td>' + stats.ibos + '</td>' +
           '<td>' + (stats.followUpsDue > 0 ? '<span class="badge badge-warning">' + stats.followUpsDue + '</span>' : '0') + '</td>' +
@@ -511,7 +510,7 @@
         totalVideosSent += stats.videosSent;
         totalFollowUpsDue += stats.followUpsDue;
         totalOverdue += stats.overdue;
-        return { name: builder.name, leadsToday: stats.leadsToday, totalLeads: stats.totalLeads, videosSent: stats.videosSent, videoRate: stats.videoRate, customers: stats.customers, ibos: stats.ibos, followUpsDue: stats.followUpsDue, overdue: stats.overdue, hotLeads: stats.hotLeads, conversionRate: stats.conversionRate };
+        return { name: builder.name, leadsToday: stats.leadsToday, totalLeads: stats.totalLeads, videosSent: stats.videosSent, conversionRate: stats.conversionRate, customers: stats.customers, ibos: stats.ibos, followUpsDue: stats.followUpsDue, overdue: stats.overdue, hotLeads: stats.hotLeads };
       });
 
       document.getElementById('team-total-leads').textContent = totalLeads;
@@ -522,10 +521,10 @@
       document.getElementById('team-followups-due').textContent = totalFollowUpsDue;
       document.getElementById('team-overdue').textContent = totalOverdue;
 
-      const videoRate = totalLeads > 0 
-        ? Math.round((totalVideosSent / totalLeads) * 100)
+      const teamConversionRate = totalVideosSent > 0 
+        ? Math.round(((totalCustomers + totalIbos) / totalVideosSent) * 100)
         : 0;
-      document.getElementById('team-video-rate').textContent = videoRate + '%';
+      document.getElementById('team-conversion').textContent = teamConversionRate + '%';
 
       const timeStats = calculateTimeToCloseStats();
       document.getElementById('close-0-14').textContent = timeStats['0-14'];
@@ -568,7 +567,7 @@
             '<span style="font-size: 20px; font-weight: 700; color: ' + (i === 0 ? '#f59e0b' : 'var(--gray-500)') + ';">#' + (i + 1) + '</span>' +
             '<div style="flex: 1;">' +
               '<div style="font-weight: 600;">' + b.name + '</div>' +
-              '<div style="font-size: 14px; color: var(--gray-600);">' + b.totalLeads + ' total leads · ' + b.videosSent + ' videos sent (' + b.videoRate + '%)</div>' +
+              '<div style="font-size: 14px; color: var(--gray-600);">' + b.totalLeads + ' total leads · ' + b.videosSent + ' videos sent · ' + b.conversionRate + '% conversion</div>' +
             '</div>' +
           '</div>';
         }).join('');
