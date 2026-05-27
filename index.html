@@ -187,14 +187,14 @@
               <thead>
                 <tr>
                   <th>Builder</th>
+                  <th>Follow-ups Due</th>
+                  <th>Overdue</th>
                   <th>Leads Today</th>
                   <th>Total Leads</th>
                   <th>Videos Sent</th>
-                  <th>Conversion Rate</th>
                   <th>Customers</th>
                   <th>IBOs</th>
-                  <th>Follow-ups Due</th>
-                  <th>Overdue</th>
+                  <th>Conversion Rate</th>
                 </tr>
               </thead>
               <tbody id="roster-tbody"></tbody>
@@ -480,14 +480,14 @@
         const stats = calculateStats(builder);
         return '<tr>' +
           '<td style="font-weight: 600;">' + builder.name + '</td>' +
+          '<td>' + (stats.followUpsDue > 0 ? '<span class="badge badge-warning">' + stats.followUpsDue + '</span>' : '0') + '</td>' +
+          '<td>' + (stats.overdue > 0 ? '<span class="badge badge-danger">' + stats.overdue + '</span>' : '0') + '</td>' +
           '<td>' + stats.leadsToday + '</td>' +
           '<td>' + stats.totalLeads + '</td>' +
           '<td>' + stats.videosSent + '</td>' +
-          '<td>' + stats.conversionRate + '%</td>' +
           '<td>' + stats.customers + '</td>' +
           '<td>' + stats.ibos + '</td>' +
-          '<td>' + (stats.followUpsDue > 0 ? '<span class="badge badge-warning">' + stats.followUpsDue + '</span>' : '0') + '</td>' +
-          '<td>' + (stats.overdue > 0 ? '<span class="badge badge-danger">' + stats.overdue + '</span>' : '0') + '</td>' +
+          '<td>' + stats.conversionRate + '%</td>' +
         '</tr>';
       }).join('');
     }
