@@ -391,9 +391,12 @@
         followUpsDue: leads.filter(function(l) { return isDueToday(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
         overdue: leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
         hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length,
-        conversionRate: leads.length > 0 
-          ? Math.round(((leads.filter(function(l) { return l.status === 'Customer'; }).length + leads.filter(function(l) { return l.status === 'IBO'; }).length) / leads.length) * 100)
-          : 0
+        conversionRate: (function() {
+          const videoSentLeads = leads.filter(function(l) { return l.videoSent === true; });
+          if (videoSentLeads.length === 0) return 0;
+          const converted = videoSentLeads.filter(function(l) { return l.status === 'Customer' || l.status === 'IBO'; }).length;
+          return Math.round((converted / videoSentLeads.length) * 100);
+        })()
       };
     }
 
@@ -492,9 +495,16 @@
       document.getElementById('team-followups-due').textContent = totalFollowUpsDue;
       document.getElementById('team-overdue').textContent = totalOverdue;
 
-      const conversionRate = totalLeads > 0 
-        ? Math.round(((totalCustomers + totalIbos) / totalLeads) * 100)
-        : 0;
+      const conversionRate = (function() {
+        let totalVideoSent = 0;
+        let totalConverted = 0;
+        teamData.forEach(function(builder) {
+          const videoSentLeads = builder.leads.filter(function(l) { return l.videoSent === true; });
+          totalVideoSent += videoSentLeads.length;
+          totalConverted += videoSentLeads.filter(function(l) { return l.status === 'Customer' || l.status === 'IBO'; }).length;
+        });
+        return totalVideoSent > 0 ? Math.round((totalConverted / totalVideoSent) * 100) : 0;
+      })();
       document.getElementById('team-conversion').textContent = conversionRate + '%';
 
       const timeStats = calculateTimeToCloseStats();
