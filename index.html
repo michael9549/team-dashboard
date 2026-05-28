@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="deployed" content="2026-05-26-v2">
+  <meta name="deployed" content="2026-05-27-v3">
   <title>Team Dashboard - Builder Stats</title>
   <style>
     * { box-sizing: border-box; }
@@ -179,6 +179,12 @@
 
       <div id="roster-view">
         <div class="card">
+          <h3 class="card-title">Builders Needing Attention</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups</p>
+          <div id="needs-attention" style="margin-top: 16px;"></div>
+        </div>
+
+        <div class="card">
           <div class="card-header">
             <h2 class="card-title">Team Roster</h2>
           </div>
@@ -187,13 +193,13 @@
               <thead>
                 <tr>
                   <th>Builder</th>
-                  <th>Leads Today</th>
-                  <th>Total Leads</th>
-                  <th>Customers</th>
-                  <th>IBOs</th>
                   <th>Follow-ups Due</th>
                   <th>Overdue</th>
-                  <th>Hot Leads</th>
+                  <th>Leads Today</th>
+                  <th>Total Leads</th>
+                  <th>Videos Sent</th>
+                  <th>Customers</th>
+                  <th>IBOs</th>
                   <th>Conversion Rate</th>
                 </tr>
               </thead>
@@ -211,6 +217,7 @@
           <div class="stat-card"><div class="stat-value" id="team-ibos">0</div><div class="stat-label">Total IBOs</div></div>
           <div class="stat-card"><div class="stat-value" id="team-followups-due">0</div><div class="stat-label">Follow-ups Due Today</div></div>
           <div class="stat-card"><div class="stat-value" id="team-overdue" style="color: var(--danger);">0</div><div class="stat-label">Overdue Follow-ups</div></div>
+          <div class="stat-card"><div class="stat-value" id="team-videos-sent">0</div><div class="stat-label">Videos Sent</div></div>
           <div class="stat-card"><div class="stat-value" id="team-conversion">0%</div><div class="stat-label">Team Conversion Rate</div></div>
         </div>
 
@@ -236,11 +243,6 @@
           <div id="all-time-performers" style="margin-top: 16px;"></div>
         </div>
 
-        <div class="card">
-          <h3 class="card-title">Builders Needing Attention</h3>
-          <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups</p>
-          <div id="needs-attention" style="margin-top: 16px;"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -254,7 +256,9 @@
       { name: 'Ricardo Lucien', username: 'ricardolucien35', repo: 'crm-ricardo-lucien' },
       { name: 'Jeff Casmer', username: 'JeffCasmer', repo: 'crm-jeff-casmer' },
       { name: 'Stella Jane Penn', username: 'SRPV8DMASTERY', repo: 'crm-stella-jane-penn' },
-      { name: 'Matthew Cruz', username: 'SmoothCruz', repo: 'crm-matthew-cruz' }
+      { name: 'Matthew Cruz', username: 'SmoothCruz', repo: 'crm-matthew-cruz' },
+      { name: 'Melissa Vogt', username: 'TheMelissaVogt', repo: 'crm-melissa-vogt' },
+      { name: 'Richard Costello', username: 'TrickieC', repo: 'crm-richard-costello' }
     ];
 
     let teamData = [];
@@ -403,18 +407,22 @@
     function calculateStats(builderData) {
       const leads = builderData.leads || [];
       const today = getTodayPacific();
+      const videosSent = leads.filter(function(l) { return l.videoSent === true; }).length;
+      const customers = leads.filter(function(l) { return l.status === 'Customer'; }).length;
+      const ibos = leads.filter(function(l) { return l.status === 'IBO'; }).length;
       
       return {
         leadsToday: leads.filter(function(l) { return l.dateAdded === today; }).length,
         totalLeads: leads.length,
-        customers: leads.filter(function(l) { return l.status === 'Customer'; }).length,
-        ibos: leads.filter(function(l) { return l.status === 'IBO'; }).length,
+        customers: customers,
+        ibos: ibos,
+        videosSent: videosSent,
+        conversionRate: videosSent > 0 
+          ? Math.round(((customers + ibos) / videosSent) * 100)
+          : 0,
         followUpsDue: leads.filter(function(l) { return isDueToday(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
         overdue: leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
-        hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length,
-        conversionRate: leads.length > 0 
-          ? Math.round(((leads.filter(function(l) { return l.status === 'Customer'; }).length + leads.filter(function(l) { return l.status === 'IBO'; }).length) / leads.length) * 100)
-          : 0
+        hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length
       };
     }
 
@@ -475,16 +483,40 @@
         const stats = calculateStats(builder);
         return '<tr>' +
           '<td style="font-weight: 600;">' + builder.name + '</td>' +
-          '<td>' + stats.leadsToday + '</td>' +
-          '<td>' + stats.totalLeads + '</td>' +
-          '<td>' + stats.customers + '</td>' +
-          '<td>' + stats.ibos + '</td>' +
           '<td>' + (stats.followUpsDue > 0 ? '<span class="badge badge-warning">' + stats.followUpsDue + '</span>' : '0') + '</td>' +
           '<td>' + (stats.overdue > 0 ? '<span class="badge badge-danger">' + stats.overdue + '</span>' : '0') + '</td>' +
-          '<td>' + (stats.hotLeads > 0 ? '<span class="badge badge-danger">' + stats.hotLeads + '</span>' : '0') + '</td>' +
+          '<td>' + stats.leadsToday + '</td>' +
+          '<td>' + stats.totalLeads + '</td>' +
+          '<td>' + stats.videosSent + '</td>' +
+          '<td>' + stats.customers + '</td>' +
+          '<td>' + stats.ibos + '</td>' +
           '<td>' + stats.conversionRate + '%</td>' +
         '</tr>';
       }).join('');
+
+      // Render builders needing attention
+      const builderStats = teamData.map(function(builder) {
+        return { name: builder.name, ...calculateStats(builder) };
+      });
+
+      const needsAttention = builderStats
+        .filter(function(b) { return b.overdue > 0; })
+        .sort(function(a, b) { return b.overdue - a.overdue; });
+
+      const needsAttentionEl = document.getElementById('needs-attention');
+      if (needsAttention.length === 0) {
+        needsAttentionEl.innerHTML = '<p style="color: var(--gray-500);">No builders with overdue follow-ups. Great job team!</p>';
+      } else {
+        needsAttentionEl.innerHTML = needsAttention.map(function(b) {
+          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
+            '<span style="font-size: 20px;">⚠️</span>' +
+            '<div style="flex: 1;">' +
+              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
     }
 
     function renderOverview() {
@@ -492,6 +524,7 @@
       let leadsToday = 0;
       let totalCustomers = 0;
       let totalIbos = 0;
+      let totalVideosSent = 0;
       let totalFollowUpsDue = 0;
       let totalOverdue = 0;
 
@@ -501,22 +534,24 @@
         leadsToday += stats.leadsToday;
         totalCustomers += stats.customers;
         totalIbos += stats.ibos;
+        totalVideosSent += stats.videosSent;
         totalFollowUpsDue += stats.followUpsDue;
         totalOverdue += stats.overdue;
-        return { name: builder.name, leadsToday: stats.leadsToday, totalLeads: stats.totalLeads, customers: stats.customers, ibos: stats.ibos, followUpsDue: stats.followUpsDue, overdue: stats.overdue, hotLeads: stats.hotLeads, conversionRate: stats.conversionRate };
+        return { name: builder.name, leadsToday: stats.leadsToday, totalLeads: stats.totalLeads, videosSent: stats.videosSent, conversionRate: stats.conversionRate, customers: stats.customers, ibos: stats.ibos, followUpsDue: stats.followUpsDue, overdue: stats.overdue, hotLeads: stats.hotLeads };
       });
 
       document.getElementById('team-total-leads').textContent = totalLeads;
       document.getElementById('team-leads-today').textContent = leadsToday;
       document.getElementById('team-customers').textContent = totalCustomers;
       document.getElementById('team-ibos').textContent = totalIbos;
+      document.getElementById('team-videos-sent').textContent = totalVideosSent;
       document.getElementById('team-followups-due').textContent = totalFollowUpsDue;
       document.getElementById('team-overdue').textContent = totalOverdue;
 
-      const conversionRate = totalLeads > 0 
-        ? Math.round(((totalCustomers + totalIbos) / totalLeads) * 100)
+      const teamConversionRate = totalVideosSent > 0 
+        ? Math.round(((totalCustomers + totalIbos) / totalVideosSent) * 100)
         : 0;
-      document.getElementById('team-conversion').textContent = conversionRate + '%';
+      document.getElementById('team-conversion').textContent = teamConversionRate + '%';
 
       const timeStats = calculateTimeToCloseStats();
       document.getElementById('close-0-14').textContent = timeStats['0-14'];
@@ -559,7 +594,7 @@
             '<span style="font-size: 20px; font-weight: 700; color: ' + (i === 0 ? '#f59e0b' : 'var(--gray-500)') + ';">#' + (i + 1) + '</span>' +
             '<div style="flex: 1;">' +
               '<div style="font-weight: 600;">' + b.name + '</div>' +
-              '<div style="font-size: 14px; color: var(--gray-600);">' + b.totalLeads + ' total leads · ' + b.conversionRate + '% conversion</div>' +
+              '<div style="font-size: 14px; color: var(--gray-600);">' + b.totalLeads + ' total leads · ' + b.videosSent + ' videos sent · ' + b.conversionRate + '% conversion</div>' +
             '</div>' +
           '</div>';
         }).join('');
