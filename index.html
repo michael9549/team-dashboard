@@ -528,10 +528,12 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
-              '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
+              '<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">' +
+                '<span style="font-weight: 600;">' + b.name + '</span>' +
+                '<span style="font-size: 22px; font-weight: 800; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</span>' +
+              '</div>' +
+              '<div style="font-size: 14px; color: var(--danger); margin-top: 2px;">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
-            '<div style="font-size: 18px; font-weight: 700; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</div>' +
           '</div>';
         }).join('');
       }
@@ -630,10 +632,12 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
-              '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
+              '<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">' +
+                '<span style="font-weight: 600;">' + b.name + '</span>' +
+                '<span style="font-size: 22px; font-weight: 800; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</span>' +
+              '</div>' +
+              '<div style="font-size: 14px; color: var(--danger); margin-top: 2px;">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
-            '<div style="font-size: 18px; font-weight: 700; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</div>' +
           '</div>';
         }).join('');
       }
