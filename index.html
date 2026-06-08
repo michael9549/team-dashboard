@@ -497,7 +497,12 @@
         return;
       }
 
-      tbody.innerHTML = teamData.map(function(builder) {
+      // Sort by total leads descending
+      const sortedData = teamData.slice().sort(function(a, b) {
+        return calculateStats(b).totalLeads - calculateStats(a).totalLeads;
+      });
+
+      tbody.innerHTML = sortedData.map(function(builder) {
         const stats = calculateStats(builder);
         return '<tr>' +
           '<td style="font-weight: 600;">' + builder.name + '</td>' +
