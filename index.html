@@ -414,6 +414,19 @@
       const customers = leads.filter(function(l) { return l.status === 'Customer'; }).length;
       const ibos = leads.filter(function(l) { return l.status === 'IBO'; }).length;
       
+      // Calculate oldest overdue date
+      const overdueLeads = leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; });
+      let daysOverdue = 0;
+      if (overdueLeads.length > 0) {
+        const oldestDate = overdueLeads.reduce(function(oldest, l) {
+          return l.nextFollowUp < oldest ? l.nextFollowUp : oldest;
+        }, overdueLeads[0].nextFollowUp);
+        const oldest = new Date(oldestDate + 'T00:00:00');
+        const todayDate = new Date(today + 'T00:00:00');
+        const diffTime = todayDate - oldest;
+        daysOverdue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }
+      
       return {
         leadsToday: leads.filter(function(l) { return l.dateAdded === today; }).length,
         totalLeads: leads.length,
@@ -424,7 +437,8 @@
           ? Math.round(((customers + ibos) / videosSent) * 100)
           : 0,
         followUpsDue: leads.filter(function(l) { return isDueToday(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
-        overdue: leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
+        overdue: overdueLeads.length,
+        daysOverdue: daysOverdue,
         hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length
       };
     }
@@ -517,6 +531,7 @@
               '<div style="font-weight: 600;">' + b.name + '</div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
+            '<div style="font-size: 18px; font-weight: 700; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</div>' +
           '</div>';
         }).join('');
       }
@@ -618,6 +633,7 @@
               '<div style="font-weight: 600;">' + b.name + '</div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
+            '<div style="font-size: 18px; font-weight: 700; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</div>' +
           '</div>';
         }).join('');
       }
