@@ -497,9 +497,9 @@
         return;
       }
 
-      // Sort by total leads descending
+      // Sort by leads today descending
       const sortedData = teamData.slice().sort(function(a, b) {
-        return calculateStats(b).totalLeads - calculateStats(a).totalLeads;
+        return calculateStats(b).leadsToday - calculateStats(a).leadsToday;
       });
 
       tbody.innerHTML = sortedData.map(function(builder) {
