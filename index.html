@@ -218,12 +218,6 @@
       </div>
 
       <div id="overview-view" class="hidden">
-        <div class="card">
-          <h3 class="card-title">⚠️ Recent Overdue (1-7 Days)</h3>
-          <p style="color: var(--gray-600); font-size: 14px;">Builders with follow-ups overdue 1-7 days</p>
-          <div id="overview-needs-attention-recent" style="margin-top: 16px;"></div>
-        </div>
-
         <div class="stats-grid">
           <div class="stat-card"><div class="stat-value" id="team-total-leads">0</div><div class="stat-label">Total Team Leads</div></div>
           <div class="stat-card"><div class="stat-value" id="team-leads-today">0</div><div class="stat-label">Leads Added Today</div></div>
@@ -255,12 +249,6 @@
         <div class="card">
           <h3 class="card-title">All Time Top Performers</h3>
           <div id="all-time-performers" style="margin-top: 16px;"></div>
-        </div>
-
-        <div class="card">
-          <h3 class="card-title">🚨 Stale Overdue (7+ Days)</h3>
-          <p style="color: var(--gray-600); font-size: 14px;">Builders with follow-ups overdue 7+ days</p>
-          <div id="overview-needs-attention-stale" style="margin-top: 16px;"></div>
         </div>
 
       </div>
@@ -674,44 +662,6 @@
 
       const recentOverdue = allOverdue.filter(function(b) { return b.daysOverdue <= 7; });
       const staleOverdue = allOverdue.filter(function(b) { return b.daysOverdue > 7; });
-
-      // Render recent overdue (1-7 days) - at top of overview
-      const overviewRecentEl = document.getElementById('overview-needs-attention-recent');
-      if (recentOverdue.length === 0) {
-        overviewRecentEl.innerHTML = '<p style="color: var(--gray-500);">No builders with recent overdue follow-ups. Great job team!</p>';
-      } else {
-        overviewRecentEl.innerHTML = recentOverdue.map(function(b) {
-          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fef3c7; border-radius: 6px; margin-bottom: 8px;">' +
-            '<span style="font-size: 20px;">⏰</span>' +
-            '<div style="flex: 1;">' +
-              '<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">' +
-                '<span style="font-weight: 600;">' + b.name + '</span>' +
-                '<span style="font-size: 22px; font-weight: 800; color: #92400e;">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</span>' +
-              '</div>' +
-              '<div style="font-size: 14px; color: #92400e; margin-top: 2px;">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
-            '</div>' +
-          '</div>';
-        }).join('');
-      }
-
-      // Render stale overdue (7+ days) - at bottom of overview
-      const overviewStaleEl = document.getElementById('overview-needs-attention-stale');
-      if (staleOverdue.length === 0) {
-        overviewStaleEl.innerHTML = '<p style="color: var(--gray-500);">No builders with stale overdue follow-ups.</p>';
-      } else {
-        overviewStaleEl.innerHTML = staleOverdue.map(function(b) {
-          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
-            '<span style="font-size: 20px;">🚨</span>' +
-            '<div style="flex: 1;">' +
-              '<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">' +
-                '<span style="font-weight: 600;">' + b.name + '</span>' +
-                '<span style="font-size: 22px; font-weight: 800; color: var(--danger);">' + b.daysOverdue + ' day' + (b.daysOverdue > 1 ? 's' : '') + ' overdue</span>' +
-              '</div>' +
-              '<div style="font-size: 14px; color: var(--danger); margin-top: 2px;">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
-            '</div>' +
-          '</div>';
-        }).join('');
-      }
     }
   </script>
 </body>
