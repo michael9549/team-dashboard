@@ -157,8 +157,8 @@
         <img src="assets/teamabundacebanner.png" alt="Team Abundance" style="height: 70px; width: auto; max-width: 300px; object-fit: contain;">
       </div>
       <div class="nav">
-        <button class="nav-button active" data-view="roster">Team Roster</button>
-        <button class="nav-button" data-view="overview">Team Overview</button>
+        <button class="nav-button active" data-view="overview">Team Overview</button>
+        <button class="nav-button" data-view="roster">Team Roster</button>
         <button class="refresh-button" id="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
       </div>
     </div>
@@ -272,7 +272,7 @@
     ];
 
     let teamData = [];
-    let currentView = 'roster';
+    let currentView = 'overview';
     let GITHUB_TOKEN = localStorage.getItem('github_token') || '';
     let isLoading = false;
 
