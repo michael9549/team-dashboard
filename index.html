@@ -412,12 +412,24 @@
       return dateString === getTodayPacific();
     }
 
+    function getDaysSinceLastLead(leads) {
+      if (!leads || leads.length === 0) return 999;
+      const today = new Date(getTodayPacific());
+      const lastLeadDate = leads
+        .map(function(l) { return new Date(l.dateAdded); })
+        .sort(function(a, b) { return b - a; })[0];
+      const diffTime = Math.abs(today - lastLeadDate);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
     function calculateStats(builderData) {
       const leads = builderData.leads || [];
       const today = getTodayPacific();
       const videosSent = leads.filter(function(l) { return l.videoSent === true; }).length;
       const customers = leads.filter(function(l) { return l.status === 'Customer'; }).length;
       const ibos = leads.filter(function(l) { return l.status === 'IBO'; }).length;
+      const overdue = leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length;
+      const daysSinceLastLead = getDaysSinceLastLead(leads);
       
       return {
         leadsToday: leads.filter(function(l) { return l.dateAdded === today; }).length,
@@ -429,8 +441,10 @@
           ? Math.round(((customers + ibos) / videosSent) * 100)
           : 0,
         followUpsDue: leads.filter(function(l) { return isDueToday(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
-        overdue: leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length,
-        hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length
+        overdue: overdue,
+        hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length,
+        daysSinceLastLead: daysSinceLastLead,
+        isHidden: overdue >= 30 || daysSinceLastLead >= 30
       };
     }
 
@@ -487,7 +501,12 @@
         return;
       }
 
-      tbody.innerHTML = teamData.map(function(builder) {
+      const visibleBuilders = teamData.filter(function(builder) {
+        const stats = calculateStats(builder);
+        return !stats.isHidden;
+      });
+
+      tbody.innerHTML = visibleBuilders.map(function(builder) {
         const stats = calculateStats(builder);
         return '<tr>' +
           '<td style="font-weight: 600;">' + builder.name + '</td>' +
@@ -507,11 +526,13 @@
         return { name: builder.name, ...calculateStats(builder) };
       });
 
-      const urgentAttention = builderStats
+      const visibleBuilderStats = builderStats.filter(function(b) { return !b.isHidden; });
+
+      const urgentAttention = visibleBuilderStats
         .filter(function(b) { return b.overdue > 0 && b.overdue <= 7; })
         .sort(function(a, b) { return b.overdue - a.overdue; });
 
-      const oldAttention = builderStats
+      const oldAttention = visibleBuilderStats
         .filter(function(b) { return b.overdue > 7; })
         .sort(function(a, b) { return b.overdue - a.overdue; });
 
@@ -555,7 +576,12 @@
       let totalFollowUpsDue = 0;
       let totalOverdue = 0;
 
-      const builderStats = teamData.map(function(builder) {
+      const visibleBuilders = teamData.filter(function(builder) {
+        const stats = calculateStats(builder);
+        return !stats.isHidden;
+      });
+
+      const builderStats = visibleBuilders.map(function(builder) {
         const stats = calculateStats(builder);
         totalLeads += stats.totalLeads;
         leadsToday += stats.leadsToday;
