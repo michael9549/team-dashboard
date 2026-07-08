@@ -523,7 +523,7 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.overdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
           '</div>';
@@ -538,7 +538,7 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.overdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
           '</div>';
