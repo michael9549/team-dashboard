@@ -178,9 +178,9 @@
 
       <div id="roster-view">
         <div class="card">
-          <h3 class="card-title">Builders Needing Attention</h3>
-          <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups</p>
-          <div id="needs-attention" style="margin-top: 16px;"></div>
+          <h3 class="card-title">Builders Needing Attention (7 Days or Less)</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups within 7 days</p>
+          <div id="needs-attention-urgent" style="margin-top: 16px;"></div>
         </div>
 
         <div class="card">
@@ -205,6 +205,12 @@
               <tbody id="roster-tbody"></tbody>
             </table>
           </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Builders Needing Attention (Over 7 Days)</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups over 7 days</p>
+          <div id="needs-attention-old" style="margin-top: 16px;"></div>
         </div>
       </div>
 
@@ -496,20 +502,39 @@
         '</tr>';
       }).join('');
 
-      // Render builders needing attention
+      // Render builders needing attention - split by 7 days
       const builderStats = teamData.map(function(builder) {
         return { name: builder.name, ...calculateStats(builder) };
       });
 
-      const needsAttention = builderStats
-        .filter(function(b) { return b.overdue > 0; })
+      const urgentAttention = builderStats
+        .filter(function(b) { return b.overdue > 0 && b.overdue <= 7; })
         .sort(function(a, b) { return b.overdue - a.overdue; });
 
-      const needsAttentionEl = document.getElementById('needs-attention');
-      if (needsAttention.length === 0) {
-        needsAttentionEl.innerHTML = '<p style="color: var(--gray-500);">No builders with overdue follow-ups. Great job team!</p>';
+      const oldAttention = builderStats
+        .filter(function(b) { return b.overdue > 7; })
+        .sort(function(a, b) { return b.overdue - a.overdue; });
+
+      const urgentEl = document.getElementById('needs-attention-urgent');
+      if (urgentAttention.length === 0) {
+        urgentEl.innerHTML = '<p style="color: var(--gray-500);">No builders with follow-ups overdue 7 days or less. Great job team!</p>';
       } else {
-        needsAttentionEl.innerHTML = needsAttention.map(function(b) {
+        urgentEl.innerHTML = urgentAttention.map(function(b) {
+          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
+            '<span style="font-size: 20px;">⚠️</span>' +
+            '<div style="flex: 1;">' +
+              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      const oldEl = document.getElementById('needs-attention-old');
+      if (oldAttention.length === 0) {
+        oldEl.innerHTML = '<p style="color: var(--gray-500);">No builders with follow-ups overdue more than 7 days.</p>';
+      } else {
+        oldEl.innerHTML = oldAttention.map(function(b) {
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
@@ -602,15 +627,34 @@
         }).join('');
       }
 
-      const needsAttention = builderStats
-        .filter(function(b) { return b.overdue > 0; })
+      const urgentAttention = builderStats
+        .filter(function(b) { return b.overdue > 0 && b.overdue <= 7; })
+        .sort(function(a, b) { return b.overdue - a.overdue; });
+
+      const oldAttention = builderStats
+        .filter(function(b) { return b.overdue > 7; })
         .sort(function(a, b) { return b.overdue - a.overdue; });
       
-      const needsAttentionEl = document.getElementById('needs-attention');
-      if (needsAttention.length === 0) {
-        needsAttentionEl.innerHTML = '<p style="color: var(--gray-500);">No builders with overdue follow-ups. Great job team!</p>';
+      const urgentEl = document.getElementById('needs-attention-urgent');
+      if (urgentAttention.length === 0) {
+        urgentEl.innerHTML = '<p style="color: var(--gray-500);">No builders with follow-ups overdue 7 days or less. Great job team!</p>';
       } else {
-        needsAttentionEl.innerHTML = needsAttention.map(function(b) {
+        urgentEl.innerHTML = urgentAttention.map(function(b) {
+          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
+            '<span style="font-size: 20px;">⚠️</span>' +
+            '<div style="flex: 1;">' +
+              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      const oldEl = document.getElementById('needs-attention-old');
+      if (oldAttention.length === 0) {
+        oldEl.innerHTML = '<p style="color: var(--gray-500);">No builders with follow-ups overdue more than 7 days.</p>';
+      } else {
+        oldEl.innerHTML = oldAttention.map(function(b) {
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
