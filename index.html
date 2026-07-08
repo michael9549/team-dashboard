@@ -506,13 +506,20 @@
         return !stats.isHidden;
       });
 
+      // Sort by leads today (most to least)
+      visibleBuilders.sort(function(a, b) {
+        const statsA = calculateStats(a);
+        const statsB = calculateStats(b);
+        return statsB.leadsToday - statsA.leadsToday;
+      });
+
       tbody.innerHTML = visibleBuilders.map(function(builder) {
         const stats = calculateStats(builder);
         return '<tr>' +
           '<td style="font-weight: 600;">' + builder.name + '</td>' +
           '<td>' + (stats.followUpsDue > 0 ? '<span class="badge badge-warning">' + stats.followUpsDue + '</span>' : '0') + '</td>' +
           '<td>' + (stats.overdue > 0 ? '<span class="badge badge-danger">' + stats.overdue + '</span>' : '0') + '</td>' +
-          '<td>' + stats.leadsToday + '</td>' +
+          '<td>' + (stats.leadsToday > 0 ? '<span class="badge badge-success">' + stats.leadsToday + '</span>' : '0') + '</td>' +
           '<td>' + stats.totalLeads + '</td>' +
           '<td>' + stats.videosSent + '</td>' +
           '<td>' + stats.customers + '</td>' +
