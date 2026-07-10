@@ -1,15 +1,62 @@
 [
-  { "name": "Michael Martin", "username": "michael9549", "repo": "crm-leads-app" },
-  { "name": "Brandon Boyd", "username": "jbboyd19", "repo": "crm-brandon-boyd" },
-  { "name": "David Thomas", "username": "dmthomas335", "repo": "crm-david-thomas" },
-  { "name": "Jason Hull", "username": "jasonhull26", "repo": "crm-jason-hull" },
-  { "name": "Ricardo Lucien", "username": "ricardolucien35", "repo": "crm-ricardo-lucien" },
-  { "name": "Jeff Casmer", "username": "JeffCasmer", "repo": "crm-jeff-casmer" },
-  { "name": "Stella Jane Penn", "username": "SRPV8DMASTERY", "repo": "crm-stella-jane-penn" },
-  { "name": "Matthew Cruz", "username": "SmoothCruz", "repo": "crm-matthew-cruz" },
-  { "name": "Melissa Vogt", "username": "TheMelissaVogt", "repo": "crm-melissa-vogt" },
-  { "name": "Richard Costello", "username": "TrickieC", "repo": "crm-richard-costello" },
-  { "name": "Linda Estelle", "username": "Lindaestelle", "repo": "crm-linda-estelle" },
-  { "name": "Dayne Gumley", "username": "Dauntless83", "repo": "crm-dayne-gumley" },
-  { "name": "Joe Hyre", "username": "hyrepower1041", "repo": "crm-joe-hyre" }
+  {
+    "name": "Michael Martin",
+    "username": "michael9549",
+    "repo": "crm-leads-app"
+  },
+  {
+    "name": "Brandon Boyd",
+    "username": "jbboyd19",
+    "repo": "crm-brandon-boyd"
+  },
+  {
+    "name": "David Thomas",
+    "username": "dmthomas335",
+    "repo": "crm-david-thomas"
+  },
+  {
+    "name": "Jason Hull",
+    "username": "jasonhull26",
+    "repo": "crm-jason-hull"
+  },
+  {
+    "name": "Ricardo Lucien",
+    "username": "ricardolucien35",
+    "repo": "crm-ricardo-lucien"
+  },
+  {
+    "name": "Jeff Casmer",
+    "username": "JeffCasmer",
+    "repo": "crm-jeff-casmer"
+  },
+  {
+    "name": "Stella Jane Penn",
+    "username": "SRPV8DMASTERY",
+    "repo": "crm-stella-jane-penn"
+  },
+  {
+    "name": "Matthew Cruz",
+    "username": "SmoothCruz",
+    "repo": "crm-matthew-cruz"
+  },
+  {
+    "name": "Richard Costello",
+    "username": "TrickieC",
+    "repo": "crm-richard-costello"
+  },
+  {
+    "name": "Linda Estelle",
+    "username": "Lindaestelle",
+    "repo": "crm-linda-estelle"
+  },
+  {
+    "name": "Dayne Gumley",
+    "username": "Dauntless83",
+    "repo": "crm-dayne-gumley"
+  },
+  {
+    "name": "Joe Hyre",
+    "username": "hyrepower1041",
+    "repo": "crm-joe-hyre"
+  }
 ]
