@@ -550,12 +550,12 @@
       const visibleBuilderStats = builderStats.filter(function(b) { return !b.isHidden; });
 
       const urgentAttention = visibleBuilderStats
-        .filter(function(b) { return b.overdue > 0 && b.overdue <= 7; })
-        .sort(function(a, b) { return b.overdue - a.overdue; });
+        .filter(function(b) { return b.maxDaysOverdue > 0 && b.maxDaysOverdue <= 7; })
+        .sort(function(a, b) { return b.maxDaysOverdue - a.maxDaysOverdue; });
 
       const oldAttention = visibleBuilderStats
-        .filter(function(b) { return b.overdue > 7; })
-        .sort(function(a, b) { return b.overdue - a.overdue; });
+        .filter(function(b) { return b.maxDaysOverdue > 7; })
+        .sort(function(a, b) { return b.maxDaysOverdue - a.maxDaysOverdue; });
 
       const urgentEl = document.getElementById('needs-attention-urgent');
       if (urgentAttention.length === 0) {
@@ -565,7 +565,7 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.overdue + ' days)</span></div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.maxDaysOverdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
           '</div>';
@@ -580,7 +580,7 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.overdue + ' days)</span></div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.maxDaysOverdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
           '</div>';
@@ -675,12 +675,12 @@
       }
 
       const urgentAttention = builderStats
-        .filter(function(b) { return b.overdue > 0 && b.overdue <= 7; })
-        .sort(function(a, b) { return b.overdue - a.overdue; });
+        .filter(function(b) { return b.maxDaysOverdue > 0 && b.maxDaysOverdue <= 7; })
+        .sort(function(a, b) { return b.maxDaysOverdue - a.maxDaysOverdue; });
 
       const oldAttention = builderStats
-        .filter(function(b) { return b.overdue > 7; })
-        .sort(function(a, b) { return b.overdue - a.overdue; });
+        .filter(function(b) { return b.maxDaysOverdue > 7; })
+        .sort(function(a, b) { return b.maxDaysOverdue - a.maxDaysOverdue; });
       
       const urgentEl = document.getElementById('needs-attention-urgent');
       if (urgentAttention.length === 0) {
@@ -690,7 +690,7 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.maxDaysOverdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
           '</div>';
@@ -705,7 +705,7 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">⚠️</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.maxDaysOverdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
             '</div>' +
           '</div>';
