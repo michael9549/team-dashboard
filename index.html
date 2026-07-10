@@ -421,6 +421,14 @@
       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     }
 
+    function getDaysOverdue(dateString) {
+      if (!dateString) return 0;
+      const today = new Date(getTodayPacific());
+      const followUp = new Date(dateString);
+      const diffTime = today - followUp;
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
     function calculateStats(builderData) {
       const leads = builderData.leads || [];
       const today = getTodayPacific();
@@ -429,6 +437,13 @@
       const ibos = leads.filter(function(l) { return l.status === 'IBO'; }).length;
       const overdue = leads.filter(function(l) { return isOverdue(l.nextFollowUp) && l.status !== 'Not Interested'; }).length;
       const daysSinceLastLead = getDaysSinceLastLead(leads);
+      
+      // Check if ANY individual lead is 30+ days overdue (not total count)
+      const maxDaysOverdue = leads.reduce(function(max, l) {
+        if (l.status === 'Not Interested') return max;
+        const days = getDaysOverdue(l.nextFollowUp);
+        return days > max ? days : max;
+      }, 0);
       
       return {
         leadsToday: leads.filter(function(l) { return l.dateAdded === today; }).length,
@@ -443,7 +458,7 @@
         overdue: overdue,
         hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length,
         daysSinceLastLead: daysSinceLastLead,
-        isHidden: overdue >= 30 || daysSinceLastLead >= 30
+        isHidden: maxDaysOverdue >= 30 || daysSinceLastLead >= 30
       };
     }
 
