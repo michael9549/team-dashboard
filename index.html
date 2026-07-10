@@ -282,6 +282,7 @@
         const response = await fetch('builders.json?v=' + Date.now());
         if (!response.ok) throw new Error('Failed to load builders.json');
         BUILDERS = await response.json();
+        BUILDERS.forEach(function(b) { if (!b.deployed_at) b.deployed_at = '2026-01-01'; });
       } catch (error) {
         console.error('Error loading builders:', error);
         document.getElementById('error-container').innerHTML = '<div class="error-message">Failed to load builder roster. Please refresh.</div>';
@@ -359,6 +360,7 @@
             name: builder.name,
             username: builder.username,
             repo: builder.repo,
+            deployedAt: builder.deployed_at,
             leads: leads || []
           });
         } catch (error) {
@@ -450,6 +452,8 @@
     function calculateStats(builderData) {
       const leads = builderData.leads || [];
       const today = getTodayPacific();
+      const deployedAt = builderData.deployedAt || '2026-01-01';
+      const daysOnDashboard = Math.ceil((new Date(today) - new Date(deployedAt)) / (1000 * 60 * 60 * 24));
       const videosSent = leads.filter(function(l) { return l.videoSent === true; }).length;
       const customers = leads.filter(function(l) { return l.status === 'Customer'; }).length;
       const ibos = leads.filter(function(l) { return l.status === 'IBO'; }).length;
@@ -477,7 +481,9 @@
         hotLeads: leads.filter(function(l) { return l.temperature === 'Hot'; }).length,
         daysSinceLastLead: daysSinceLastLead,
         maxDaysOverdue: maxDaysOverdue,
-        isHidden: maxDaysOverdue >= 30 || daysSinceLastLead >= 30
+        daysOnDashboard: daysOnDashboard,
+        isNewBuilder: leads.length === 0 && daysOnDashboard < 30,
+        isHidden: maxDaysOverdue >= 30 || (leads.length > 0 && daysSinceLastLead >= 30) || (leads.length === 0 && daysOnDashboard >= 30)
       };
     }
 
@@ -618,7 +624,10 @@
         .sort(function(a, b) { return b.daysSinceLastLead - a.daysSinceLastLead; });
 
       const hiddenNew = hiddenBuilders
-        .filter(function(b) { return b.totalLeads === 0; })
+        .filter(function(b) { return b.isNewBuilder; })
+
+      const hiddenInactiveNew = hiddenBuilders
+        .filter(function(b) { return b.totalLeads === 0 && !b.isNewBuilder && b.maxDaysOverdue < 30; })
         .sort(function(a, b) { return a.name.localeCompare(b.name); });
 
       const hiddenOverdueEl = document.getElementById('hidden-overdue');
@@ -659,11 +668,28 @@
           return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--gray-100); border-radius: 6px; margin-bottom: 8px;">' +
             '<span style="font-size: 20px;">👋</span>' +
             '<div style="flex: 1;">' +
-              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--gray-500); font-size: 12px;">(' + b.daysOnDashboard + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--gray-600);">No leads added yet · Reach out and help them get started</div>' +
             '</div>' +
           '</div>';
         }).join('');
+      }
+
+      const hiddenInactiveNewEl = document.getElementById('hidden-inactive-new');
+      if (hiddenInactiveNew.length === 0) {
+        if (hiddenInactiveNewEl) hiddenInactiveNewEl.innerHTML = '<p style="color: var(--gray-500);">No inactive new builders.</p>';
+      } else {
+        if (hiddenInactiveNewEl) {
+          hiddenInactiveNewEl.innerHTML = hiddenInactiveNew.map(function(b) {
+            return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fef3c7; border-radius: 6px; margin-bottom: 8px;">' +
+              '<span style="font-size: 20px;">😴</span>' +
+              '<div style="flex: 1;">' +
+                '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--warning); font-size: 12px;">(' + b.daysOnDashboard + ' days)</span></div>' +
+                '<div style="font-size: 14px; color: var(--gray-600);">No leads added in ' + b.daysOnDashboard + ' days · Contact or remove</div>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
       }
     }
 
