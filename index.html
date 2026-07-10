@@ -212,6 +212,24 @@
           <p style="color: var(--gray-600); font-size: 14px;">Builders with overdue follow-ups over 7 days</p>
           <div id="needs-attention-old" style="margin-top: 16px;"></div>
         </div>
+
+        <div class="card" style="border: 2px solid var(--danger);">
+          <h3 class="card-title">⚠️ Hidden from Roster — Overdue 30+ Days</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">Builders with individual leads overdue 30+ days. Contact them or remove from dashboard.</p>
+          <div id="hidden-overdue" style="margin-top: 16px;"></div>
+        </div>
+
+        <div class="card" style="border: 2px solid var(--warning);">
+          <h3 class="card-title">⚠️ Hidden from Roster — Inactive (No Leads 30+ Days)</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">Builders who had leads but haven't added any in 30+ days. Contact them or remove from dashboard.</p>
+          <div id="hidden-inactive" style="margin-top: 16px;"></div>
+        </div>
+
+        <div class="card" style="border: 2px solid var(--gray-400);">
+          <h3 class="card-title">👋 New Builders (0 Leads)</h3>
+          <p style="color: var(--gray-600); font-size: 14px;">New builders who haven't added their first lead yet. Reach out and help them get started.</p>
+          <div id="hidden-new" style="margin-top: 16px;"></div>
+        </div>
       </div>
 
       <div id="overview-view" class="hidden">
@@ -412,7 +430,7 @@
     }
 
     function getDaysSinceLastLead(leads) {
-      if (!leads || leads.length === 0) return 999; // Builders with no leads are treated as inactive
+      if (!leads || leads.length === 0) return 0; // New builders with no leads are not hidden
       const today = new Date(getTodayPacific());
       const lastLeadDate = leads
         .map(function(l) { return new Date(l.dateAdded); })
@@ -583,6 +601,66 @@
             '<div style="flex: 1;">' +
               '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.maxDaysOverdue + ' days)</span></div>' +
               '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      // Render hidden builders - split by reason
+      const hiddenBuilders = builderStats.filter(function(b) { return b.isHidden; });
+
+      const hiddenOverdue = hiddenBuilders
+        .filter(function(b) { return b.maxDaysOverdue >= 30; })
+        .sort(function(a, b) { return b.maxDaysOverdue - a.maxDaysOverdue; });
+
+      const hiddenInactive = hiddenBuilders
+        .filter(function(b) { return b.daysSinceLastLead >= 30 && b.totalLeads > 0; })
+        .sort(function(a, b) { return b.daysSinceLastLead - a.daysSinceLastLead; });
+
+      const hiddenNew = hiddenBuilders
+        .filter(function(b) { return b.totalLeads === 0; })
+        .sort(function(a, b) { return a.name.localeCompare(b.name); });
+
+      const hiddenOverdueEl = document.getElementById('hidden-overdue');
+      if (hiddenOverdue.length === 0) {
+        hiddenOverdueEl.innerHTML = '<p style="color: var(--gray-500);">No builders with leads overdue 30+ days.</p>';
+      } else {
+        hiddenOverdueEl.innerHTML = hiddenOverdue.map(function(b) {
+          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fee2e2; border-radius: 6px; margin-bottom: 8px;">' +
+            '<span style="font-size: 20px;">🚨</span>' +
+            '<div style="flex: 1;">' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--danger); font-size: 12px;">(' + b.maxDaysOverdue + ' days overdue)</span></div>' +
+              '<div style="font-size: 14px; color: var(--danger);">' + b.overdue + ' overdue follow-up' + (b.overdue > 1 ? 's' : '') + ' · ' + b.totalLeads + ' total leads</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      const hiddenInactiveEl = document.getElementById('hidden-inactive');
+      if (hiddenInactive.length === 0) {
+        hiddenInactiveEl.innerHTML = '<p style="color: var(--gray-500);">No inactive builders.</p>';
+      } else {
+        hiddenInactiveEl.innerHTML = hiddenInactive.map(function(b) {
+          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fef3c7; border-radius: 6px; margin-bottom: 8px;">' +
+            '<span style="font-size: 20px;">😴</span>' +
+            '<div style="flex: 1;">' +
+              '<div style="font-weight: 600;">' + b.name + ' <span style="color: var(--warning); font-size: 12px;">(' + b.daysSinceLastLead + ' days since last lead)</span></div>' +
+              '<div style="font-size: 14px; color: var(--gray-600);">' + b.totalLeads + ' total leads · Last lead: ' + b.daysSinceLastLead + ' days ago</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      const hiddenNewEl = document.getElementById('hidden-new');
+      if (hiddenNew.length === 0) {
+        hiddenNewEl.innerHTML = '<p style="color: var(--gray-500);">No new builders waiting to start.</p>';
+      } else {
+        hiddenNewEl.innerHTML = hiddenNew.map(function(b) {
+          return '<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--gray-100); border-radius: 6px; margin-bottom: 8px;">' +
+            '<span style="font-size: 20px;">👋</span>' +
+            '<div style="flex: 1;">' +
+              '<div style="font-weight: 600;">' + b.name + '</div>' +
+              '<div style="font-size: 14px; color: var(--gray-600);">No leads added yet · Reach out and help them get started</div>' +
             '</div>' +
           '</div>';
         }).join('');
