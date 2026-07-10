@@ -412,7 +412,7 @@
     }
 
     function getDaysSinceLastLead(leads) {
-      if (!leads || leads.length === 0) return 999;
+      if (!leads || leads.length === 0) return 0; // New builders with no leads are not hidden
       const today = new Date(getTodayPacific());
       const lastLeadDate = leads
         .map(function(l) { return new Date(l.dateAdded); })
