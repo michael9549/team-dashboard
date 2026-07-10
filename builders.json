@@ -2,61 +2,73 @@
   {
     "name": "Michael Martin",
     "username": "michael9549",
-    "repo": "crm-leads-app"
+    "repo": "crm-leads-app",
+    "deployed_at": "2026-01-01"
   },
   {
     "name": "Brandon Boyd",
     "username": "jbboyd19",
-    "repo": "crm-brandon-boyd"
+    "repo": "crm-brandon-boyd",
+    "deployed_at": "2026-05-18"
   },
   {
     "name": "David Thomas",
     "username": "dmthomas335",
-    "repo": "crm-david-thomas"
+    "repo": "crm-david-thomas",
+    "deployed_at": "2026-05-18"
   },
   {
     "name": "Jason Hull",
     "username": "jasonhull26",
-    "repo": "crm-jason-hull"
+    "repo": "crm-jason-hull",
+    "deployed_at": "2026-05-18"
   },
   {
     "name": "Ricardo Lucien",
     "username": "ricardolucien35",
-    "repo": "crm-ricardo-lucien"
+    "repo": "crm-ricardo-lucien",
+    "deployed_at": "2026-05-18"
   },
   {
     "name": "Jeff Casmer",
     "username": "JeffCasmer",
-    "repo": "crm-jeff-casmer"
+    "repo": "crm-jeff-casmer",
+    "deployed_at": "2026-05-18"
   },
   {
     "name": "Stella Jane Penn",
     "username": "SRPV8DMASTERY",
-    "repo": "crm-stella-jane-penn"
+    "repo": "crm-stella-jane-penn",
+    "deployed_at": "2026-05-26"
   },
   {
     "name": "Matthew Cruz",
     "username": "SmoothCruz",
-    "repo": "crm-matthew-cruz"
+    "repo": "crm-matthew-cruz",
+    "deployed_at": "2026-05-26"
   },
   {
     "name": "Richard Costello",
     "username": "TrickieC",
-    "repo": "crm-richard-costello"
+    "repo": "crm-richard-costello",
+    "deployed_at": "2026-05-28"
   },
   {
     "name": "Linda Estelle",
     "username": "Lindaestelle",
-    "repo": "crm-linda-estelle"
+    "repo": "crm-linda-estelle",
+    "deployed_at": "2026-05-28"
   },
   {
     "name": "Dayne Gumley",
     "username": "Dauntless83",
-    "repo": "crm-dayne-gumley"
+    "repo": "crm-dayne-gumley",
+    "deployed_at": "2026-06-14"
   },
   {
     "name": "Joe Hyre",
     "username": "hyrepower1041",
-    "repo": "crm-joe-hyre"
+    "repo": "crm-joe-hyre",
+    "deployed_at": "2026-06-10"
   }
 ]
