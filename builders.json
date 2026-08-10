@@ -42,33 +42,9 @@
     "deployed_at": "2026-05-26"
   },
   {
-    "name": "Matthew Cruz",
-    "username": "SmoothCruz",
-    "repo": "crm-matthew-cruz",
-    "deployed_at": "2026-05-26"
-  },
-  {
-    "name": "Richard Costello",
-    "username": "TrickieC",
-    "repo": "crm-richard-costello",
-    "deployed_at": "2026-05-28"
-  },
-  {
     "name": "Linda Estelle",
     "username": "Lindaestelle",
     "repo": "crm-linda-estelle",
     "deployed_at": "2026-05-28"
-  },
-  {
-    "name": "Dayne Gumley",
-    "username": "Dauntless83",
-    "repo": "crm-dayne-gumley",
-    "deployed_at": "2026-06-14"
-  },
-  {
-    "name": "Joe Hyre",
-    "username": "hyrepower1041",
-    "repo": "crm-joe-hyre",
-    "deployed_at": "2026-06-10"
   }
 ]
