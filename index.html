@@ -502,6 +502,8 @@
       
       const allClosedLeads = [];
       teamData.forEach(function(builder) {
+        const builderStats = calculateStats(builder);
+        if (builder.visible === false || builderStats.isHidden) return;
         const closedLeads = (builder.leads || []).filter(function(l) { 
           return (l.status === 'Customer' || l.status === 'IBO') && l.customerSince && l.dateAdded;
         });
@@ -723,6 +725,10 @@
 
       teamTotalBuilders.forEach(function(builder) {
         const stats = calculateStats(builder);
+        if (builder.visible === false || stats.isHidden) {
+          totalCustomers += stats.customers;
+          return;
+        }
         totalLeads += stats.totalLeads;
         leadsToday += stats.leadsToday;
         totalCustomers += stats.customers;
