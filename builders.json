@@ -40,5 +40,13 @@
     "username": "dnmlls",
     "repo": "crm-dean-mills",
     "deployed_at": "2026-08-12"
+  },
+  {
+    "name": "Jason Hull",
+    "username": "jasonhull26",
+    "repo": "crm-jason-hull",
+    "deployed_at": "2026-05-18",
+    "visible": false,
+    "include_in_team_totals": true
   }
 ]

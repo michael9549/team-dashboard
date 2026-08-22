@@ -367,6 +367,8 @@
             username: builder.username,
             repo: builder.repo,
             deployedAt: builder.deployed_at,
+            visible: builder.visible !== false,
+            includeInTeamTotals: builder.include_in_team_totals !== false,
             leads: leads || []
           });
         } catch (error) {
@@ -550,7 +552,7 @@
 
       const visibleBuilders = teamData.filter(function(builder) {
         const stats = calculateStats(builder);
-        return !stats.isHidden;
+        return builder.visible !== false && !stats.isHidden;
       });
 
       // Sort by leads today (most to least)
@@ -577,10 +579,10 @@
 
       // Render builders needing attention - split by 7 days
       const builderStats = teamData.map(function(builder) {
-        return { name: builder.name, ...calculateStats(builder) };
+        return { name: builder.name, visible: builder.visible !== false, ...calculateStats(builder) };
       });
 
-      const visibleBuilderStats = builderStats.filter(function(b) { return !b.isHidden; });
+      const visibleBuilderStats = builderStats.filter(function(b) { return b.visible !== false && !b.isHidden; });
 
       const urgentAttention = visibleBuilderStats
         .filter(function(b) { return b.maxDaysOverdue > 0 && b.maxDaysOverdue <= 7; })
@@ -621,7 +623,7 @@
       }
 
       // Render hidden builders - split by reason
-      const hiddenBuilders = builderStats.filter(function(b) { return b.isHidden; });
+      const hiddenBuilders = builderStats.filter(function(b) { return b.visible !== false && b.isHidden; });
 
       const hiddenOverdue = hiddenBuilders
         .filter(function(b) { return b.maxDaysOverdue >= 30; })
@@ -710,12 +712,16 @@
       let totalFollowUpsDue = 0;
       let totalOverdue = 0;
 
-      const visibleBuilders = teamData.filter(function(builder) {
-        const stats = calculateStats(builder);
-        return !stats.isHidden;
+      const teamTotalBuilders = teamData.filter(function(builder) {
+        return builder.includeInTeamTotals !== false;
       });
 
-      const builderStats = visibleBuilders.map(function(builder) {
+      const visibleBuilders = teamData.filter(function(builder) {
+        const stats = calculateStats(builder);
+        return builder.visible !== false && !stats.isHidden;
+      });
+
+      teamTotalBuilders.forEach(function(builder) {
         const stats = calculateStats(builder);
         totalLeads += stats.totalLeads;
         leadsToday += stats.leadsToday;
@@ -724,6 +730,10 @@
         totalVideosSent += stats.videosSent;
         totalFollowUpsDue += stats.followUpsDue;
         totalOverdue += stats.overdue;
+      });
+
+      const builderStats = visibleBuilders.map(function(builder) {
+        const stats = calculateStats(builder);
         return { name: builder.name, leadsToday: stats.leadsToday, totalLeads: stats.totalLeads, videosSent: stats.videosSent, conversionRate: stats.conversionRate, customers: stats.customers, ibos: stats.ibos, followUpsDue: stats.followUpsDue, overdue: stats.overdue, hotLeads: stats.hotLeads };
       });
 
