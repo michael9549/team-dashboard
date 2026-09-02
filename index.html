@@ -710,6 +710,7 @@
       let leadsToday = 0;
       let totalCustomers = 0;
       let totalIbos = 0;
+      let totalConversions = 0;
       let totalVideosSent = 0;
       let totalFollowUpsDue = 0;
       let totalOverdue = 0;
@@ -726,13 +727,14 @@
       teamTotalBuilders.forEach(function(builder) {
         const stats = calculateStats(builder);
         if (builder.visible === false || stats.isHidden) {
-          totalCustomers += stats.customers;
+          totalCustomers += stats.customers + stats.ibos;
           return;
         }
         totalLeads += stats.totalLeads;
         leadsToday += stats.leadsToday;
-        totalCustomers += stats.customers;
+        totalCustomers += stats.customers + stats.ibos;
         totalIbos += stats.ibos;
+        totalConversions += stats.customers + stats.ibos;
         totalVideosSent += stats.videosSent;
         totalFollowUpsDue += stats.followUpsDue;
         totalOverdue += stats.overdue;
@@ -752,7 +754,7 @@
       document.getElementById('team-overdue').textContent = totalOverdue;
 
       const teamConversionRate = totalVideosSent > 0 
-        ? Math.round(((totalCustomers + totalIbos) / totalVideosSent) * 100)
+        ? Math.round((totalConversions / totalVideosSent) * 100)
         : 0;
       document.getElementById('team-conversion').textContent = teamConversionRate + '%';
 
