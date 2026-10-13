@@ -410,8 +410,43 @@
       }
 
       const data = await response.json();
-      const content = JSON.parse(atob(data.content));
+      const content = await readGitHubJsonFile(data);
       return content.leads || [];
+    }
+
+    function decodeBase64(base64) {
+      return decodeURIComponent(escape(atob(base64.replace(/\s/g, ''))));
+    }
+
+    async function readGitHubJsonFile(data) {
+      if (data.content) {
+        return JSON.parse(decodeBase64(data.content));
+      }
+
+      if (data.git_url) {
+        const blobResponse = await fetch(data.git_url, {
+          headers: {
+            'Authorization': 'Bearer ' + GITHUB_TOKEN,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (blobResponse.ok) {
+          const blob = await blobResponse.json();
+          if (blob.content) {
+            return JSON.parse(decodeBase64(blob.content));
+          }
+        }
+      }
+
+      if (data.download_url) {
+        const rawResponse = await fetch(data.download_url);
+        if (rawResponse.ok) {
+          return await rawResponse.json();
+        }
+      }
+
+      throw new Error('Unable to read GitHub JSON file content');
     }
 
     function updateLastUpdated() {
